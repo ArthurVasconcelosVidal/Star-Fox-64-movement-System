@@ -19,7 +19,7 @@ public class MovimentManager : MonoBehaviour{
     // Update is called once per frame
     void Update(){
         Move();
-        SpaceShipRotation();
+        //SpaceShipRotation();
     }
 
     void LateUpdate(){
@@ -39,15 +39,14 @@ public class MovimentManager : MonoBehaviour{
             playerManager.meshObject.transform.rotation = Quaternion.Lerp(playerManager.meshObject.transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
         }
         else{
-            Quaternion newRotation = Quaternion.identity;
-            playerManager.meshObject.transform.rotation = Quaternion.Lerp(playerManager.meshObject.transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
+            playerManager.meshObject.transform.rotation = Quaternion.Lerp(playerManager.meshObject.transform.rotation, transform.rotation, rotationSpeed * Time.deltaTime);
         }
     }
 
     void ClampOnBoundaries() {
         Vector3 objectPosition = transform.localPosition;
-        objectPosition.x = Mathf.Clamp(objectPosition.x, (dollyCart.transform.right * -screenLimits.x).x, (dollyCart.transform.right * screenLimits.x).x);
-        objectPosition.y = Mathf.Clamp(objectPosition.y, (dollyCart.transform.up * -screenLimits.y).y, (dollyCart.transform.up * screenLimits.y).y);
+        objectPosition.x = Mathf.Clamp(objectPosition.x, -screenLimits.x, screenLimits.x);
+        objectPosition.y = Mathf.Clamp(objectPosition.y, -screenLimits.y, screenLimits.y);
         transform.localPosition = objectPosition;
     }
 
@@ -59,7 +58,7 @@ public class MovimentManager : MonoBehaviour{
         Gizmos.color = Color.cyan;
         //X debug
         Gizmos.DrawLine(dollyCart.transform.right * -screenLimits.x, dollyCart.transform.right * screenLimits.x);
-        Gizmos.DrawLine((dollyCart.transform.up * -screenLimits.y), dollyCart.transform.up * screenLimits.y);
+        Gizmos.DrawLine(dollyCart.transform.up * -screenLimits.y, dollyCart.transform.up * screenLimits.y);
 
         //Square debug
         Gizmos.DrawLine(dollyCart.transform.right * -screenLimits.x + dollyCart.transform.up * screenLimits.y, dollyCart.transform.right * screenLimits.x + dollyCart.transform.up * screenLimits.y);
