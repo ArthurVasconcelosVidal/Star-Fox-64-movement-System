@@ -6,10 +6,5 @@ public class PlayerManager : MonoBehaviour{
     public MovimentManager movimentManager;
     public InputManager inputManager;
     public Rigidbody rigidbody;
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public GameObject meshObject;
 }

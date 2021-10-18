@@ -8,6 +8,9 @@ public class MovimentManager : MonoBehaviour{
     [SerializeField] Vector2 screenLimits;
     [SerializeField] float velocity;
     [SerializeField] GameObject dollyCart;
+    [SerializeField] [Range(0,1)] float rotationInterpolation;
+    [SerializeField] float rotationSpeed;
+    Vector3 direction;
 
     // Start is called before the first frame update
     void Start(){
@@ -16,8 +19,7 @@ public class MovimentManager : MonoBehaviour{
     // Update is called once per frame
     void Update(){
         Move();
-        Debug.DrawLine(dollyCart.transform.right * -screenLimits.x, dollyCart.transform.right * screenLimits.x, Color.blue);
-        Debug.DrawLine(dollyCart.transform.up * -screenLimits.y, dollyCart.transform.up * screenLimits.y, Color.red);
+        SpaceShipRotation();
     }
 
     void LateUpdate(){
@@ -25,8 +27,21 @@ public class MovimentManager : MonoBehaviour{
     }
 
     void Move(){
-        Vector3 direction = Vector3.up * playerManager.inputManager.LeftStick().y + Vector3.right * playerManager.inputManager.LeftStick().x;
+        direction = Vector3.up * playerManager.inputManager.LeftStick().y + Vector3.right * playerManager.inputManager.LeftStick().x;
         transform.Translate(direction * velocity * Time.deltaTime);
+    }
+
+    void SpaceShipRotation() {
+        if (direction != Vector3.zero){
+            var newDir = Vector3.Lerp(transform.forward, direction, rotationInterpolation);
+            Debug.DrawRay(transform.position, newDir.normalized * 5, Color.red);
+            Quaternion newRotation = Quaternion.FromToRotation(transform.forward, newDir.normalized);
+            playerManager.meshObject.transform.rotation = Quaternion.Lerp(playerManager.meshObject.transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
+        }
+        else{
+            Quaternion newRotation = Quaternion.identity;
+            playerManager.meshObject.transform.rotation = Quaternion.Lerp(playerManager.meshObject.transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
+        }
     }
 
     void ClampOnBoundaries() {
@@ -34,19 +49,22 @@ public class MovimentManager : MonoBehaviour{
         objectPosition.x = Mathf.Clamp(objectPosition.x, (dollyCart.transform.right * -screenLimits.x).x, (dollyCart.transform.right * screenLimits.x).x);
         objectPosition.y = Mathf.Clamp(objectPosition.y, (dollyCart.transform.up * -screenLimits.y).y, (dollyCart.transform.up * screenLimits.y).y);
         transform.localPosition = objectPosition;
-        
-        //X mark
-        Debug.DrawLine(dollyCart.transform.right * -screenLimits.x, dollyCart.transform.right * screenLimits.x, Color.blue);
-        Debug.DrawLine((dollyCart.transform.up * -screenLimits.y), dollyCart.transform.up * screenLimits.y, Color.red);
-        
-        //Square mark
-        Debug.DrawLine(dollyCart.transform.right * -screenLimits.x + dollyCart.transform.up * screenLimits.y, dollyCart.transform.right * screenLimits.x + dollyCart.transform.up * screenLimits.y, Color.green);
-        Debug.DrawLine(dollyCart.transform.right * -screenLimits.x - dollyCart.transform.up * screenLimits.y, dollyCart.transform.right * screenLimits.x - dollyCart.transform.up * screenLimits.y, Color.green);
-        Debug.DrawLine(dollyCart.transform.up * -screenLimits.y + dollyCart.transform.right * -screenLimits.x, dollyCart.transform.up * screenLimits.y + dollyCart.transform.right * -screenLimits.x, Color.cyan);
-        Debug.DrawLine(dollyCart.transform.up * -screenLimits.y - dollyCart.transform.right * -screenLimits.x, dollyCart.transform.up * screenLimits.y - dollyCart.transform.right * -screenLimits.x, Color.cyan);
     }
 
     void OnTriggerEnter(Collider other){
         Debug.Log(other.name);    
+    }
+
+    void OnDrawGizmos(){
+        Gizmos.color = Color.cyan;
+        //X debug
+        Gizmos.DrawLine(dollyCart.transform.right * -screenLimits.x, dollyCart.transform.right * screenLimits.x);
+        Gizmos.DrawLine((dollyCart.transform.up * -screenLimits.y), dollyCart.transform.up * screenLimits.y);
+
+        //Square debug
+        Gizmos.DrawLine(dollyCart.transform.right * -screenLimits.x + dollyCart.transform.up * screenLimits.y, dollyCart.transform.right * screenLimits.x + dollyCart.transform.up * screenLimits.y);
+        Gizmos.DrawLine(dollyCart.transform.right * -screenLimits.x - dollyCart.transform.up * screenLimits.y, dollyCart.transform.right * screenLimits.x - dollyCart.transform.up * screenLimits.y);
+        Gizmos.DrawLine(dollyCart.transform.up * -screenLimits.y + dollyCart.transform.right * -screenLimits.x, dollyCart.transform.up * screenLimits.y + dollyCart.transform.right * -screenLimits.x);
+        Gizmos.DrawLine(dollyCart.transform.up * -screenLimits.y - dollyCart.transform.right * -screenLimits.x, dollyCart.transform.up * screenLimits.y - dollyCart.transform.right * -screenLimits.x);
     }
 }

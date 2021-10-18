@@ -751,9 +751,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerManager: {fileID: 860470781}
-  screenLimits: {x: 5, y: 5}
+  screenLimits: {x: 8, y: 5}
   velocity: 5
   dollyCart: {fileID: 1258687750}
+  rotationInterpolation: 0.5
+  rotationSpeed: 5
 --- !u!114 &860470781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -769,6 +771,7 @@ MonoBehaviour:
   movimentManager: {fileID: 860470780}
   inputManager: {fileID: 860470778}
   rigidbody: {fileID: 860470782}
+  meshObject: {fileID: 364875096}
 --- !u!54 &860470782
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1023,7 +1026,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.5646688, y: 1}
+    m_SensorSize: {x: 1.6182965, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
