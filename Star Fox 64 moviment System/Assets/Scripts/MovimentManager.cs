@@ -19,7 +19,7 @@ public class MovimentManager : MonoBehaviour{
     // Update is called once per frame
     void Update(){
         Move();
-        //SpaceShipRotation();
+        SpaceShipRotation();
     }
 
     void LateUpdate(){
@@ -27,20 +27,19 @@ public class MovimentManager : MonoBehaviour{
     }
 
     void Move(){
-        direction = Vector3.up * playerManager.inputManager.LeftStick().y + Vector3.right * playerManager.inputManager.LeftStick().x;
-        transform.Translate(direction * velocity * Time.deltaTime);
+        direction = dollyCart.transform.up * playerManager.inputManager.LeftStick().y + dollyCart.transform.right * playerManager.inputManager.LeftStick().x;
+        transform.position += direction * velocity * Time.deltaTime;
     }
 
     void SpaceShipRotation() {
         if (direction != Vector3.zero){
             var newDir = Vector3.Lerp(transform.forward, direction, rotationInterpolation);
-            Debug.DrawRay(transform.position, newDir.normalized * 5, Color.red);
-            Quaternion newRotation = Quaternion.FromToRotation(transform.forward, newDir.normalized);
+            //Quaternion newRotation = Quaternion.FromToRotation(transform.forward, newDir.normalized);
+            Quaternion newRotation = Quaternion.LookRotation(newDir.normalized, transform.up);
             playerManager.meshObject.transform.rotation = Quaternion.Lerp(playerManager.meshObject.transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
         }
-        else{
+        else
             playerManager.meshObject.transform.rotation = Quaternion.Lerp(playerManager.meshObject.transform.rotation, transform.rotation, rotationSpeed * Time.deltaTime);
-        }
     }
 
     void ClampOnBoundaries() {
@@ -53,7 +52,6 @@ public class MovimentManager : MonoBehaviour{
     void OnTriggerEnter(Collider other){
         Debug.Log(other.name);    
     }
-
     void OnDrawGizmos(){
         Gizmos.color = Color.cyan;
         //X debug
