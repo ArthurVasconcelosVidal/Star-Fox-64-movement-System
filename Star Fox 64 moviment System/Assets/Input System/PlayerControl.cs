@@ -95,6 +95,44 @@ public class @PlayerControl : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""Actions"",
+            ""id"": ""5ccc9d33-05ba-4312-9804-25757b98a654"",
+            ""actions"": [
+                {
+                    ""name"": ""ActionButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""4cc6edfb-37d7-44d2-a945-008b92c5d485"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7cd6e272-4e20-408d-bca9-4984d3da1b32"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActionButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b4186a93-26a0-4611-ae38-2e6e937e7ef2"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActionButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -102,6 +140,9 @@ public class @PlayerControl : IInputActionCollection, IDisposable
         // Moviment
         m_Moviment = asset.FindActionMap("Moviment", throwIfNotFound: true);
         m_Moviment_Move = m_Moviment.FindAction("Move", throwIfNotFound: true);
+        // Actions
+        m_Actions = asset.FindActionMap("Actions", throwIfNotFound: true);
+        m_Actions_ActionButton = m_Actions.FindAction("ActionButton", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -180,8 +221,45 @@ public class @PlayerControl : IInputActionCollection, IDisposable
         }
     }
     public MovimentActions @Moviment => new MovimentActions(this);
+
+    // Actions
+    private readonly InputActionMap m_Actions;
+    private IActionsActions m_ActionsActionsCallbackInterface;
+    private readonly InputAction m_Actions_ActionButton;
+    public struct ActionsActions
+    {
+        private @PlayerControl m_Wrapper;
+        public ActionsActions(@PlayerControl wrapper) { m_Wrapper = wrapper; }
+        public InputAction @ActionButton => m_Wrapper.m_Actions_ActionButton;
+        public InputActionMap Get() { return m_Wrapper.m_Actions; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(ActionsActions set) { return set.Get(); }
+        public void SetCallbacks(IActionsActions instance)
+        {
+            if (m_Wrapper.m_ActionsActionsCallbackInterface != null)
+            {
+                @ActionButton.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnActionButton;
+                @ActionButton.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnActionButton;
+                @ActionButton.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnActionButton;
+            }
+            m_Wrapper.m_ActionsActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @ActionButton.started += instance.OnActionButton;
+                @ActionButton.performed += instance.OnActionButton;
+                @ActionButton.canceled += instance.OnActionButton;
+            }
+        }
+    }
+    public ActionsActions @Actions => new ActionsActions(this);
     public interface IMovimentActions
     {
         void OnMove(InputAction.CallbackContext context);
+    }
+    public interface IActionsActions
+    {
+        void OnActionButton(InputAction.CallbackContext context);
     }
 }
